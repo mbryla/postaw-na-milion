@@ -64,9 +64,23 @@ export const AdminLayout = () => {
         }
       }
 
-      const firstQuestion = unusedQuestions[0];
+      const manuallySelectedQuestions =
+        adminState.roundState.type === 'round-state-pick-questions'
+          ? adminState.roundState.pickedQuestionsIds
+          : [];
+
+      const firstQuestion =
+        adminState.questionsSelectionMode === 'automatic'
+          ? unusedQuestions[0]
+          : adminState.questionsById[manuallySelectedQuestions[0]];
       const secondQuestion =
-        unusedQuestions.length === 1 ? firstQuestion : unusedQuestions[1];
+        adminState.questionsSelectionMode === 'automatic'
+          ? unusedQuestions.length === 1
+            ? firstQuestion
+            : unusedQuestions[1]
+          : manuallySelectedQuestions.length === 1
+          ? firstQuestion
+          : adminState.questionsById[manuallySelectedQuestions[1]];
 
       const firstQuestionCategoryIndex = firstQuestion.possibleCategories.findIndex(
         (cateogry, index) =>
@@ -214,12 +228,28 @@ export const AdminLayout = () => {
           {adminState.questionsSelectionMode === 'manual' && (
             <Button
               disabled={
-                (gameState.type === 'game-state-show-title' ||
-                  gameState.type === 'game-state-show-status') &&
-                adminState.roundState.type === 'round-state-empty'
+                !(
+                  (gameState.type === 'game-state-show-title' ||
+                    gameState.type === 'game-state-show-status') &&
+                  adminState.roundState.type === 'round-state-empty'
+                )
               }
-              onClick={() => {}}
+              onClick={() =>
+                changeAdminState({
+                  type: 'admin-state-base',
+                  questionsSelectionMode: adminState.questionsSelectionMode,
+                  questionsById: adminState.questionsById,
+                  answeredQuestionsCount: adminState.answeredQuestionsCount,
+                  usedCategories: adminState.usedCategories,
+                  usedQuestions: adminState.usedQuestions,
+                  roundState: {
+                    type: 'round-state-pick-questions',
+                    pickedQuestionsIds: [],
+                  },
+                })
+              }
               style={{ marginBottom: '10px' }}
+              color="lightgreen"
             >
               wybierz pytania
             </Button>
@@ -229,7 +259,12 @@ export const AdminLayout = () => {
               !(
                 (gameState.type === 'game-state-show-title' ||
                   gameState.type === 'game-state-show-status') &&
-                adminState.roundState.type === 'round-state-empty'
+                ((adminState.questionsSelectionMode === 'automatic' &&
+                  adminState.roundState.type === 'round-state-empty') ||
+                  (adminState.roundState.type ===
+                    'round-state-pick-questions' &&
+                    adminState.roundState.pickedQuestionsIds.length > 0 &&
+                    adminState.roundState.pickedQuestionsIds.length <= 2))
               )
             }
             onClick={startRound}
@@ -306,6 +341,8 @@ export const AdminLayout = () => {
           questions={Object.values(adminState.questionsById)}
           usedQuestions={adminState.usedQuestions}
           usedCategories={adminState.usedCategories}
+          adminState={adminState}
+          changeAdminState={changeAdminState}
         />
       )}
       <SynchronizationSection
@@ -319,7 +356,7 @@ export const AdminLayout = () => {
         onQuestionsLoad={(questionsById) => {
           changeAdminState({
             type: 'admin-state-base',
-            questionsSelectionMode: 'automatic',
+            questionsSelectionMode: 'manual',
             usedQuestions: [],
             usedCategories: [],
             answeredQuestionsCount: 0,
@@ -329,6 +366,35 @@ export const AdminLayout = () => {
           changeGameState(defaultGameState);
         }}
       />
+      <p>
+        ręczny wybór pytań{' '}
+        <input
+          type="checkbox"
+          disabled={
+            !(
+              adminState.type === 'admin-state-base' &&
+              adminState.roundState.type === 'round-state-empty' &&
+              (gameState.type === 'game-state-show-title' ||
+                gameState.type === 'game-state-show-status')
+            )
+          }
+          checked={
+            adminState.type === 'admin-state-base' &&
+            adminState.questionsSelectionMode === 'manual'
+          }
+          onChange={() => {
+            if (adminState.type === 'admin-state-base') {
+              changeAdminState({
+                ...adminState,
+                questionsSelectionMode:
+                  adminState.questionsSelectionMode === 'automatic'
+                    ? 'manual'
+                    : 'automatic',
+              });
+            }
+          }}
+        />
+      </p>
     </div>
   );
 };
@@ -465,12 +531,28 @@ const ClockSection: FC<ClockSectionProps> = ({ send }) => {
     <div>
       <h1>Zegar</h1>
       <div>
-        <Button onClick={() => send({ type: 'start-timer' })} style={{ marginBottom: '10px' }}>start</Button>
-        <Button onClick={() => send({ type: 'stop-timer' })} style={{ marginBottom: '10px' }}>stop</Button>
-        <Button onClick={() => send({ type: 'reset-timer-60' })} style={{ marginBottom: '10px' }}>
+        <Button
+          onClick={() => send({ type: 'start-timer' })}
+          style={{ marginBottom: '10px' }}
+        >
+          start
+        </Button>
+        <Button
+          onClick={() => send({ type: 'stop-timer' })}
+          style={{ marginBottom: '10px' }}
+        >
+          stop
+        </Button>
+        <Button
+          onClick={() => send({ type: 'reset-timer-60' })}
+          style={{ marginBottom: '10px' }}
+        >
           reset 60s
         </Button>
-        <Button onClick={() => send({ type: 'reset-timer-30' })} style={{ marginBottom: '10px' }}>
+        <Button
+          onClick={() => send({ type: 'reset-timer-30' })}
+          style={{ marginBottom: '10px' }}
+        >
           reset 30s
         </Button>
       </div>
