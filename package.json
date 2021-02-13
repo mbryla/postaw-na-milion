@@ -23,8 +23,11 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "reset-security": "node security/reset.js"
+    "reset-security": "node security/reset.js",
+    "predeploy": "yarn build",
+    "deploy": "gh-pages -d build"
   },
+  "homepage": "https://mbryla.github.io/postaw-na-milion/",
   "eslintConfig": {
     "extends": [
       "react-app",
