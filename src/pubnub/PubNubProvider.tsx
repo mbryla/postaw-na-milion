@@ -19,7 +19,7 @@ export const PubNubProvider: FC<PubNubProviderProps> = ({
     return new PubNub({
       publishKey: process.env.REACT_APP_PUBLISH_KEY || '',
       subscribeKey: process.env.REACT_APP_SUBSCRIBE_KEY || '',
-      authKey,
+      // authKey,
       uuid,
     });
   }, [authKey, uuid]);

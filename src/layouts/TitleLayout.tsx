@@ -1,9 +1,5 @@
+import logo from './postaw-na-milion-logo.png';
+
 export const TitleLayout = () => {
-  return (
-    <img
-      src="./postaw-na-milion-logo.png"
-      alt="logo"
-      style={{ width: '60%' }}
-    />
-  );
+  return <img src={logo} alt="logo" style={{ width: '60%' }} />;
 };
