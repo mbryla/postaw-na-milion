@@ -1,0 +1,32 @@
+[
+  {
+    "id": "identyfikator-001",
+    "text": "Co powie ryba?",
+    "answers": [
+      "Odę do Radości",
+      "Nic - ryby nie mówią",
+      "Inwokację Pana Tadeusza",
+      "Będę!"
+    ],
+    "correctAnswerIndex": 3,
+    "possibleCategories": [
+      "Zwierzęta",
+      "Filmy"
+    ]
+  },
+  {
+    "id": "identyfikator-002",
+    "text": "Pierwiastek z czterech to",
+    "answers": [
+      "2",
+      "4",
+      "0",
+      "miliard!"
+    ],
+    "correctAnswerIndex": 0,
+    "possibleCategories": [
+      "Nauka",
+      "Wiedza z podstawówki"
+    ]
+  }
+]
